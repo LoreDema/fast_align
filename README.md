@@ -33,12 +33,17 @@ To install these on Ubuntu:
     
     sudo apt-get install libgoogle-perftools-dev libsparsehash-dev
 
-To compile, do the following
+To compile with CMAKE, do the following
 
     mkdir build
     cd build
     cmake ..
     make
+
+To compile with AutoMake, do the following
+
+    make -f Makefile_AutoMake
+
 
 Run `fast_align` to see a list of command line options.
 
