@@ -4,10 +4,10 @@ static=
 default_target: all
 
 fast_align: src/fast_align.cc src/ttables.h src/ttables.cc src/da.h src/corpus.h
-	g++ -Wall -O3 $(static) -g -std=c++0x -ltcmalloc -fopenmp -I. src/fast_align.cc src/ttables.cc -o $@
+	g++ -Wall -O3 $(static) -g -std=c++0x -ltcmalloc_minimal -fopenmp -I. src/fast_align.cc src/ttables.cc -o $@
 
 atools: src/atools.cc src/alignment_io.cc
-	g++ -Wall -O3 $(static) -g -std=c++0x -ltcmalloc -fopenmp -I. src/atools.cc src/alignment_io.cc -o $@
+	g++ -Wall -O3 $(static) -g -std=c++0x -ltcmalloc_minimal -fopenmp -I. src/atools.cc src/alignment_io.cc -o $@
 
 all: atools fast_align
 
