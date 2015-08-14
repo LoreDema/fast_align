@@ -64,22 +64,46 @@ class TTable {
     }
   }
 
-  inline void SetMaxE(const unsigned e) {
+  //inline void SetMaxE(const unsigned e) {
     // NOT thread safe
-    if (e >= counts.size())
-        counts.resize(e + 1);
-  }
+    //if (e >= counts.size())
+        //counts.resize(e + 1);
+  //}
+
+  inline void SetMaxE(const unsigned e) {
+      // thread safe ??? (to check)
+  #pragma omp critical(resize_counts)
+      {
+      if (e >= counts.size())
+          counts.resize(e + 1);
+      }
+    }
+
+  //inline void Insert(const unsigned e, const unsigned f) {
+    // NOT thread safe
+    //if (e >= counts.size())
+        //counts.resize(e + 1);
+    //counts[e][f] = 0;
+  //}
 
   inline void Insert(const unsigned e, const unsigned f) {
-    // NOT thread safe
-    if (e >= counts.size())
-        counts.resize(e + 1);
-    counts[e][f] = 0;
-  }
+      // thread safe ??? (to check)
+  #pragma omp critical(resize_counts)
+      {
+      if (e >= counts.size())
+          counts.resize(e + 1);
+      }
+      counts[e][f] = 0;
+    }
 
+  //inline void Increment(const unsigned e, const unsigned f, const double x) {
+    //counts[e].find(f)->second += x; // Ignore race conditions here.
+  //}
   inline void Increment(const unsigned e, const unsigned f, const double x) {
-    counts[e].find(f)->second += x; // Ignore race conditions here.
-  }
+      // thread safe ??? (to check)
+  #pragma omp critical(update_counts)
+      counts[e].find(f)->second += x;
+    }
 
   void NormalizeVB(const double alpha) {
     ttable.swap(counts);
@@ -120,6 +144,7 @@ class TTable {
     assert (!frozen_);
     if (!frozen_) {
       ttable.resize(counts.size());
+#pragma omp critical(update_ttable)  // aggiunta Lorenzo
       for (unsigned i = 0; i < counts.size(); ++i) {
         ttable[i] = counts[i];
       }

@@ -5,8 +5,7 @@ fast_align (unofficial version)
 
 I am implementing a fork featuring this stuff:
 
- * Oject Oriented code
- * Multithreading
+ * Safe multithreading
  * Incremental training
 
 If you use this software, please cite:

@@ -93,7 +93,9 @@ struct option options[] = {
 bool InitCommandLine(int argc, char** argv) {
   while (1) {
     int oi;
-    int c = getopt_long(argc, argv, "i:rI:df:m:t:q:T:ova:Np:b", options, &oi);
+    int c = getopt_long(argc, argv, "i:rI:df:m:t:q:T:ova:Np:b:", options, &oi);
+    //int c = getopt_long(argc, argv, "i:rI:dp:T:ova:Nc:b", options, &oi);
+    //int c = getopt_long(argc, argv, "i:rI:dp:T:ova:Nc:b:", options, &oi);
     if (c == -1) break;
     cerr << "ARG=" << (char)c << endl;
     switch(c) {
