@@ -310,8 +310,8 @@ int main(int argc, char **argv) {
   if (!InitCommandLine(argc, argv)) {
     cerr << "Usage: " << argv[0] << " -c COMMAND -i FILE1.AL [-j FILE2.AL]\n";
     cerr << "Valid options for COMMAND:";
-    for (auto it : commands)
-      cerr << ' ' << it.first;
+    for (map<string, shared_ptr<Command> >::iterator it=commands.begin(); it!=commands.end(); ++it)
+      cerr << ' ' << it->first;
     cerr << endl;
     return 1;
   }

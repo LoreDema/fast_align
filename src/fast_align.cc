@@ -219,7 +219,7 @@ inline void AddTranslationOptions(vector<vector<unsigned> >& insert_buffer,
   s2t->SetMaxE(insert_buffer.size()-1);
 #pragma omp parallel for schedule(dynamic)
   for (unsigned e = 0; e < insert_buffer.size(); ++e) {
-    for (unsigned f : insert_buffer[e]) {
+    for (unsigned f = 0; f < insert_buffer[e].size(); ++f) {
       s2t->Insert(e, f);
     }
     insert_buffer[e].clear();
@@ -257,27 +257,28 @@ void InitialPass(const unsigned kNULL, const bool use_null, TTable* s2t,
     *tot_len_ratio += static_cast<double>(trg.size()) / static_cast<double>(src.size());
     *n_target_tokens += trg.size();
     if (use_null) {
-      for (const unsigned f : trg) {
-        s2t->Insert(kNULL, f);
+      for (vector<unsigned>::iterator it=trg.begin(); it!= trg.end(); ++it){
+        s2t->Insert(kNULL, *it);
       }
     }
-    for (const unsigned e : src) {
-      if (e >= insert_buffer.size()) {
-        insert_buffer.resize(e+1);
+    for (vector<unsigned>::iterator it=src.begin(); it!=src.end(); ++it){
+      if ((*it) >= insert_buffer.size()) {
+        insert_buffer.resize((*it)+1);
       }
-      for (const unsigned f : trg) {
-        insert_buffer[e].push_back(f);
+      for (vector<unsigned>::iterator it2=trg.begin(); it2!= trg.end(); ++it2){
+        insert_buffer[(*it)].push_back(*it2);
       }
       insert_buffer_items += trg.size();
     }
+
     if (insert_buffer_items > thread_buffer_size * 100) {
       insert_buffer_items = 0;
       AddTranslationOptions(insert_buffer, s2t);
     }
     ++size_counts_[make_pair<short, short>(trg.size(), src.size())];
   }
-  for (const auto& p : size_counts_) {
-    size_counts->push_back(p);
+  for (unordered_map<pair<short, short>, unsigned, PairHash>::const_iterator it=size_counts_.begin(); it!=size_counts_.end(); ++it){
+      size_counts->push_back(*it);
   }
   AddTranslationOptions(insert_buffer, s2t);
 
@@ -356,8 +357,8 @@ int main(int argc, char** argv) {
         UpdateFromPairs(buffer, lc, iter, final_iteration, use_null, kNULL,
             prob_align_not_null, &c0, &emp_feat, &likelihood, &s2t, &outputs);
         if (final_iteration) {
-          for (const string& output : outputs) {
-            cout << output;
+          for (vector<string>::iterator it=outputs.begin(); it!=outputs.end(); ++it){
+            cout << *it;
           }
         }
         buffer.clear();
@@ -367,8 +368,8 @@ int main(int argc, char** argv) {
       UpdateFromPairs(buffer, lc, iter, final_iteration, use_null, kNULL,
           prob_align_not_null, &c0, &emp_feat, &likelihood, &s2t, &outputs);
       if (final_iteration) {
-        for (const string& output : outputs) {
-          cout << output;
+        for (vector<string>::iterator it=outputs.begin(); it!=outputs.end(); ++it){
+          cout << *it;
         }
       }
       buffer.clear();
@@ -429,9 +430,9 @@ int main(int argc, char** argv) {
     while(getline(in, line)) {
       ++lc;
       ParseLine(line, &src, &trg);
-      for (auto s : src) cout << d.Convert(s) << ' ';
+      for (vector<unsigned>::iterator it=src.begin(); it!=src.end(); ++it) cout << d.Convert(*it) << ' ';
       cout << "|||";
-      for (auto t : trg) cout << ' ' << d.Convert(t);
+      for (vector<unsigned>::iterator it=trg.begin(); it!=trg.end(); ++it) cout << d.Convert(*it) << ' ';
       cout << " |||";
       if (is_reverse)
         swap(src, trg);

@@ -169,12 +169,12 @@ class TTable {
       const std::string& a = d.Convert(i);
       const Word2Double& cpd = ttable[i];
       double max_p = -1;
-      for (auto& it : cpd)
-        if (it.second > max_p) max_p = it.second;
+      for (Word2Double::const_iterator it=cpd.begin(); it!=cpd.end(); ++it)
+        if (it->second > max_p) max_p = it->second;
       const double threshold = max_p * BEAM_THRESHOLD;
-      for (auto& it : cpd) {
-        const std::string& b = d.Convert(it.first);
-        double c = log(it.second);
+      for (Word2Double::const_iterator it=cpd.begin(); it!=cpd.end(); ++it){
+        const std::string& b = d.Convert(it->first);
+        double c = log(it->second);
         if (c >= threshold)
           file << a << '\t' << b << '\t' << c << std::endl;
       }
@@ -185,8 +185,8 @@ class TTable {
   void ClearCounts() {
 #pragma omp parallel for schedule(dynamic)
     for (size_t i=0; i<counts.size();++i) {
-      for (auto& cnt : counts[i]) {
-        cnt.second = 0.0;
+      for (Word2Double::iterator cnt = counts[i].begin(); cnt != counts[i].end(); ++cnt) {
+        cnt->second = 0.0;
       }
     }
   }
